@@ -1,0 +1,5 @@
+asyncio~=3.4.3
+aiogram~=3.17.0
+python-dotenv~=1.0.1
+pyrofork==2.3.56
+tgcrypto-pyrofork==1.2.7
