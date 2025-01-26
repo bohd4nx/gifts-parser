@@ -27,7 +27,7 @@
 
 ### Result
 
-![image](https://github.com/user-attachments/assets/6ee51145-8a82-4f34-9323-84b0b81ddd72)
+![image](https://github.com/user-attachments/assets/6c29656d-43a2-4862-89ec-7d922603bde0)
 
 </details>
 
