@@ -15,10 +15,13 @@ class FileService(BaseDataHandler):
         filename = os.path.join(self.base_path, f'{chat}.txt')
 
         gift_counts = defaultdict(int)
+        gift_names = {}
         for gift in user_data:
-            gift_counts[gift['gift']] += 1
+            gift_id = gift['gift']
+            gift_counts[gift_id] += 1
+            gift_names[gift_id] = gift['gift_name']
 
-        gifts_text = ' | '.join(f"Gift ID {gift_id}: {count}"
+        gifts_text = ' | '.join(f"{gift_names[gift_id]} [{gift_id}]: {count}"
                                 for gift_id, count in gift_counts.items())
 
         line = f"@{username} [{user_id}]\n  └─ {gifts_text}\n\n"

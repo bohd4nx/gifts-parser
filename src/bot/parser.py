@@ -4,6 +4,7 @@ from typing import AsyncGenerator, Dict, Any
 
 from pyrogram.enums import ChatMemberStatus
 
+from data.gifts import GIFT_MAPPINGS
 from .core.abstract import BaseParser
 from .core.client import ClientManager
 
@@ -52,9 +53,12 @@ class GiftParser(BaseParser):
         result = []
         try:
             async for gift in client.get_user_gifts(user_id):
-                if gift.is_limited and not gift.is_upgraded:
+                if (gift.is_limited and gift.is_upgraded is None and
+                        str(gift.id) in GIFT_MAPPINGS):
+                    gift_name = GIFT_MAPPINGS[str(gift.id)]["name"]
                     result.append({
                         "gift": gift.id,
+                        "gift_name": gift_name,
                         "user_id": user_id,
                         "username": username
                     })
