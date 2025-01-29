@@ -20,9 +20,9 @@ GIFT_MAPPINGS = {
     "5821261908354794038": {"name": "Spy Agaric"},
     "5841391256135008713": {"name": "Trapped Heart"},
     "5857140566201991735": {"name": "Vintage Cigar"},
-    "6003643167683903930": {"name": "Party Sparklers"},
-    "5933590374185435592": {"name": "Fool's Cap"},
     "5933531623327795414": {"name": "Genie Lamp"},
-    "5933531623327795414": {"name": "Witch Hat"},
-    "6028283532500009446": {"name": "Lunar Snake"},
+    "6028426950047957932": {"name": "Lunar Snake"},
+    "6003643167683903930": {"name": "Party Sparkler"},
+    "5933590374185435592": {"name": "Jester Hat"},
+    "5821384757304362229": {"name": "Witch Hat"},
 }
