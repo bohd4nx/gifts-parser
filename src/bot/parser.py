@@ -1,8 +1,10 @@
 import asyncio
 import logging
-from typing import AsyncGenerator, Dict, Any
+from datetime import datetime
+from typing import AsyncGenerator, Dict, Any, Set
 
 from pyrogram.enums import ChatMemberStatus
+from pyrogram.errors import FloodWait
 
 from data.gifts import GIFT_MAPPINGS
 from .core.abstract import BaseParser
@@ -12,8 +14,17 @@ from .core.client import ClientManager
 class GiftParser(BaseParser):
     def __init__(self):
         self.client_manager = ClientManager()
-        self.max_retries = 3
-        self.retry_delay = 1
+        self.parsed_users: Set[int] = set()
+        self.rate_limit_delay = 0.1
+        self.last_request_time = datetime.now()
+        self.batch_size = 100
+
+    async def _handle_rate_limit(self):
+        now = datetime.now()
+        time_passed = (now - self.last_request_time).total_seconds()
+        if time_passed < self.rate_limit_delay:
+            await asyncio.sleep(self.rate_limit_delay - time_passed)
+        self.last_request_time = datetime.now()
 
     async def get_total_members(self, chat: str) -> int:
         try:
@@ -21,53 +32,74 @@ class GiftParser(BaseParser):
             if not client:
                 return 0
             chat_info = await client.get_chat(chat)
-            return chat_info.members_count
+            return chat_info.members_count or 0
         except Exception as e:
             logging.error(f"Error getting total members: {e}")
             return 0
 
-    async def parse_members(self, chat: str) -> AsyncGenerator[Dict[str, Any], None]:
-        client = None
-        for _ in range(self.max_retries):
+    async def process_member_batch(self, client, members):
+        results = []
+        for member in members:
+            if not member.user or member.user.id in self.parsed_users:
+                continue
+
+            if member.status not in [ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR]:
+                continue
+
+            self.parsed_users.add(member.user.id)
             try:
-                client = await self.client_manager.get_client()
-                if not client:
-                    continue
+                gifts = []
+                async for gift in client.get_user_gifts(member.user.id):
+                    if (gift.is_limited and
+                            gift.is_upgraded is None and
+                            str(gift.id) in GIFT_MAPPINGS):
+                        gifts.append({
+                            "gift": gift.id,
+                            "gift_name": GIFT_MAPPINGS[str(gift.id)]["name"],
+                            "user_id": member.user.id,
+                            "username": member.user.username or "unknown"
+                        })
 
-                async for user in client.get_chat_members(chat):
-                    if user.status == ChatMemberStatus.MEMBER:
-                        gifts = await self._get_user_gifts(client, user.user.id, user.user.username)
-                        yield gifts
-                        await asyncio.sleep(0.5)
-                break
+                if gifts:
+                    results.append(gifts)
 
+            except FloodWait as e:
+                await asyncio.sleep(e.value)
             except Exception as e:
-                logging.error(f"Error in parse_members: {e}")
-                await asyncio.sleep(self.retry_delay)
-            finally:
-                if client:
-                    await self.client_manager.cleanup()
+                logging.error(f"Error processing user {member.user.id}: {e}")
 
-    @staticmethod
-    async def _get_user_gifts(client, user_id: int, username: str):
-        result = []
+        return results
+
+    async def parse_members(self, chat: str) -> AsyncGenerator[Dict[str, Any], None]:
+        client = await self.client_manager.get_client()
+        if not client:
+            return
+
         try:
-            async for gift in client.get_user_gifts(user_id):
-                if (gift.is_limited and gift.is_upgraded is None and
-                        str(gift.id) in GIFT_MAPPINGS):
-                    gift_name = GIFT_MAPPINGS[str(gift.id)]["name"]
-                    result.append({
-                        "gift": gift.id,
-                        "gift_name": gift_name,
-                        "user_id": user_id,
-                        "username": username
-                    })
-        except Exception as e:
-            logging.error(f"Error getting user gifts: {e}")
-            return []
+            members_batch = []
+            async for member in client.get_chat_members(chat):
+                members_batch.append(member)
 
-        return result
+                if len(members_batch) >= self.batch_size:
+                    results = await self.process_member_batch(client, members_batch)
+                    for result in results:
+                        yield result
+                    members_batch = []
+                    await asyncio.sleep(0.1)
+
+            if members_batch:
+                results = await self.process_member_batch(client, members_batch)
+                for result in results:
+                    yield result
+
+        except Exception as e:
+            logging.error(f"Error in parse_members: {e}")
+        finally:
+            self.parsed_users.clear()
 
     async def parse(self, chat: str):
-        async for result in self.parse_members(chat):
-            yield result
+        try:
+            async for result in self.parse_members(chat):
+                yield result
+        except Exception as e:
+            logging.error(f"Parse error: {e}")

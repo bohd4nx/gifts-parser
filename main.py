@@ -8,6 +8,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 from data.config import BOT_TOKEN
 from src.bot import router
+from src.bot.core.abstract import BotCommands
 
 
 class TelegramBot:
@@ -33,6 +34,7 @@ class TelegramBot:
         )
         self.dp = Dispatcher(storage=self.storage)
         self.dp.include_router(router)
+        await BotCommands.setup_commands(self.bot)
 
     async def start(self) -> None:
         try:

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from aiogram.types import BotCommand
+
 
 class BaseParser(ABC):
     @abstractmethod
@@ -21,3 +23,12 @@ class BaseManager(ABC):
     @abstractmethod
     async def cleanup(self):
         pass
+
+
+class BotCommands(ABC):
+    @staticmethod
+    async def setup_commands(bot):
+        commands = [
+            BotCommand(command="start", description="Start the bot"),
+        ]
+        await bot.set_my_commands(commands)
