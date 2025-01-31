@@ -31,4 +31,10 @@ GIFT_MAPPINGS = {
     "5782988952268964995": {"name": "Desk Calendar"},
     "6001473264306619020": {"name": "Jingle Bells"},
     "5980789805615678057": {"name": "Snow Mittens"},
+    "5836780359634649414": {"name": "Voodoo Doll"},
+    "5841632504448025405": {"name": "Mad Pumpkin"},
+    "5170594532177215681": {"name": "Hypno Lollipop"},
+    "5782984811920491178": {"name": "B-Day Candle"},
+    "5935936766358847989": {"name": "Bunny Muffin"},
+    "5933629604416717361": {"name": "Astral Shard"},
 }
