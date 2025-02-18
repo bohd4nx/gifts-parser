@@ -111,8 +111,13 @@ class ParseManager:
 
             keyboard = self.get_keyboard(is_parsing=False,
                                          chat=self.active_session.chat) if self.active_session.found_users > 0 else None
-
-            await self.active_session.status_message.edit_text(final_text, reply_markup=keyboard)
+            
+            try:
+                await self.active_session.status_message.edit_text(final_text, reply_markup=keyboard)
+            except Exception as e:
+                pass
+                # if "message is not modified" not in str(e).lower():
+                #     logging.error(f"Error updating final status: {e}")
 
     @staticmethod
     def get_keyboard(is_parsing: bool = True, chat: str = None) -> InlineKeyboardMarkup:
@@ -147,7 +152,14 @@ class ParseManager:
         )
 
         keyboard = self.get_keyboard(is_parsing=show_stop)
-        await session.status_message.edit_text(status_text, reply_markup=keyboard)
+        try:
+            await session.status_message.edit_text(status_text, reply_markup=keyboard)
+        except Exception as e:
+            pass
+            # if "message is not modified" not in str(e).lower():
+            #     logging.error(f"Error updating status: {e}"
+            #                   )
+        
         session.last_update = datetime.now()
 
     async def process_results(self, result: dict) -> None:

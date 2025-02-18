@@ -31,6 +31,7 @@ class GiftParser(BaseParser):
         try:
             client = await self.client_manager.get_client()
             if not client:
+                logging.error("Failed to initialize Telegram client")
                 return 0
             chat_info = await client.get_chat(chat)
             return chat_info.members_count or 0
