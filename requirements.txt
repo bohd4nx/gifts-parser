@@ -3,4 +3,4 @@ aiohttp~=3.11.12
 aiogram~=3.17.0
 configparser~=6.0.1
 pyrofork==2.3.56
-tgcrypto-pyrofork==1.2.7s
+tgcrypto-pyrofork==1.2.7
