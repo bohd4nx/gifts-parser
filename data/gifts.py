@@ -29,7 +29,7 @@ class GiftsManager:
     async def _fetch_and_update_cache(self) -> None:
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(GIFTS_API_URL) as response:
+                async with session.get(GIFTS_API_URL, ssl=False) as response:
                     if response.status == 200:
                         self._cache = await response.json()
                         self._last_update = datetime.now()
