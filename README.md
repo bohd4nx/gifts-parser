@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://www.python.org/downloads/)
 [![aiogram](https://img.shields.io/badge/aiogram-3.x-green)](https://docs.aiogram.dev/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)]
 [![Platform](https://img.shields.io/badge/Telegram%20Bot-lightgrey)](https://github.com/bohd4nx/gift-parser)
 
 </div>
@@ -37,6 +37,9 @@
 - ✨ Detection of limited, non-upgraded gifts (NFT)
 - 📊 Collection of user profiles and gift IDs
 - 💾 Saving scan results
+- 🔄 Batch processing of multiple chat links
+- 🌐 Multilingual interface (English and Russian)
+- 🔄 Automatic cache updating for gift names
 
 ## 🛠 Installation
 
@@ -53,7 +56,11 @@
    pip install -r requirements.txt
    ```
 
-3. Edit config.ini in the project root directory to match your needs.
+3. Edit config.ini in the project root directory:
+   - Set your Bot Token
+   - Set your Telegram API ID and API Hash
+   - Add your phone number in international format
+   - Configure admins and parsing parameters
 
 ## 🚀 Usage
 
@@ -63,38 +70,31 @@
    ```
 2. Send the bot a /start command and follow the instructions:
    - Provide a Telegram chat link (e.g., https://t.me/somechat)
-   - Wait for the bot to parse the chat
-   - Use the bot’s commands to fetch results
+   - For batch processing, send multiple links separated by new lines
+   - Wait for the bot to parse the chat(s)
+   - Use the download button to get results
 
 ## 🔧 Example Usage & Output
 
 1. Send the '/start' command to the bot.
-2. The bot will ask for a Telegram chat link (e.g., https://t.me/samplechat).
-3. Bot starts parsing and shows progress updates:
+2. The bot will ask for a Telegram chat link or multiple links:
 
    ```
-   🔍 Parsing chat: @samplechat
-   📊 Total members: 150K
-   👤 Processed: 10K/150K
+   https://t.me/samplechat
+   https://t.me/anotherchat
+   ```
+
+3. Bot starts parsing each chat sequentially and shows progress:
+
+   ```
+   🔍 Parsing chat [1/3]: @samplechat
+   📊 Total members: 15K
+   👤 Processed: 10K/15K
    ✨ Users found: 9.1K
    ⌛ Estimated time remaining: 1h 33m
-
    ```
 
-4. After finishing, the bot offers a download of the results:
-
-   ```
-   ✅ Parsing completed for @samplechat!
-   📊 Total members: 150K
-   👤 Processed: 150K/150K
-   ✨ Users found: 63K
-   ⏳ Time taken: 3h 45m
-
-   [ 📥 Download Results ]
-
-   ```
-
-5. Clicking «📥 Download Results» gives you a file with usernames and their limited gift info.
+4. After finishing all chats, the bot offers downloads for each result.
 
 ## 📝 License
 

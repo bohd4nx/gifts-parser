@@ -12,7 +12,16 @@ from bot.services.saver import FileService
 from bot.settings import GiftParser
 from bot.states import ParseStates
 from bot.utils.formatter import format_time_duration
-from bot.utils.texts import get_status_message, get_final_message, INIT_TEXT, get_button_text, get_error_text
+from bot.utils.texts import (
+    get_batch_info,
+    get_error_next,
+    get_status_message,
+    get_final_message,
+    get_final_batch_message,
+    INIT_TEXT,
+    get_button_text,
+    get_error_text
+)
 from data.config import ADMINS
 
 router = Router()
@@ -111,13 +120,8 @@ class ParseManager:
 
             keyboard = self.get_keyboard(is_parsing=False,
                                          chat=self.active_session.chat) if self.active_session.found_users > 0 else None
-            
-            try:
-                await self.active_session.status_message.edit_text(final_text, reply_markup=keyboard)
-            except Exception as e:
-                pass
-                # if "message is not modified" not in str(e).lower():
-                #     logging.error(f"Error updating final status: {e}")
+
+            await self.active_session.status_message.edit_text(final_text, reply_markup=keyboard)
 
     @staticmethod
     def get_keyboard(is_parsing: bool = True, chat: str = None) -> InlineKeyboardMarkup:
@@ -137,7 +141,7 @@ class ParseManager:
             ]])
         return None
 
-    async def update_status(self, session: ParseSession, show_stop: bool = True) -> None:
+    async def update_status(self, session: ParseSession, show_stop: bool = True, batch_info: str = '') -> None:
         if not session.should_update_status():
             return
 
@@ -148,18 +152,12 @@ class ParseManager:
             processed=session.parsed_count,
             found=session.found_users,
             percent=percent,
-            eta=session.get_eta()
+            eta=session.get_eta(),
+            batch_info=batch_info
         )
 
         keyboard = self.get_keyboard(is_parsing=show_stop)
-        try:
-            await session.status_message.edit_text(status_text, reply_markup=keyboard)
-        except Exception as e:
-            pass
-            # if "message is not modified" not in str(e).lower():
-            #     logging.error(f"Error updating status: {e}"
-            #                   )
-        
+        await session.status_message.edit_text(status_text, reply_markup=keyboard)
         session.last_update = datetime.now()
 
     async def process_results(self, result: dict) -> None:
@@ -220,34 +218,56 @@ async def parse_handler(message: Message, state: FSMContext):
 
     await state.clear()
 
-    chat = message.text.replace('https://', '').replace('t.me/', '').replace('@', '').strip()
+    links = [link.strip() for link in message.text.split('\n') if link.strip()]
+    if not links:
+        return
+
     status_msg = await message.answer(INIT_TEXT)
-    session = parse_manager.create_session(chat, status_msg)
+    batch_info = get_batch_info(1, len(links)) if len(links) > 1 else ''
 
-    try:
-        session.total_members = await parse_manager.parser.get_total_members(chat)
-        if session.total_members == 0:
-            await status_msg.edit_text(get_error_text('cant_get_members'))
-            return
+    for i, link in enumerate(links, 1):
+        chat = link.replace('https://', '').replace('t.me/', '').replace('@', '').strip()
+        session = parse_manager.create_session(chat, status_msg)
 
-        await parse_manager.update_status(session)
+        try:
+            session.total_members = await parse_manager.parser.get_total_members(chat)
+            if session.total_members == 0:
+                await status_msg.edit_text(get_error_text('cant_get_members'))
+                if len(links) > 1:
+                    await asyncio.sleep(3)
+                    await status_msg.edit_text(get_error_next())
+                continue
 
-        async for result in parse_manager.parser.parse(chat):
-            if session.should_stop():
-                break
+            if len(links) > 1:
+                batch_info = get_batch_info(i, len(links))
 
-            await parse_manager.process_results(result)
+            await parse_manager.update_status(session, batch_info=batch_info)
 
-            if not session.stop_requested:
-                await parse_manager.update_status(session)
+            async for result in parse_manager.parser.parse(chat):
+                if session.should_stop():
+                    break
 
-    except Exception as e:
-        logging.error(f"Parse error: {e}")
-        await status_msg.edit_text(get_error_text('parse_error', str(e)))
-    finally:
-        if session and not session.stop_requested:
-            await parse_manager.stop_session()
-            await state.set_state(ParseStates.waiting_for_link)
+                await parse_manager.process_results(result)
+
+                if not session.stop_requested:
+                    await parse_manager.update_status(session, show_stop=True, batch_info=batch_info)
+
+        except Exception as e:
+            logging.error(f"Parse error for {chat}: {e}")
+            await status_msg.edit_text(get_error_text('parse_error', str(e)))
+            if len(links) > 1:
+                await asyncio.sleep(3)
+                await status_msg.edit_text(get_error_next())
+            continue
+        finally:
+            if session and not session.stop_requested:
+                await parse_manager.stop_session()
+
+        await asyncio.sleep(1)
+
+    if len(links) > 1:
+        await status_msg.edit_text("✅ " + get_final_batch_message())
+    await state.set_state(ParseStates.waiting_for_link)
 
 
 @router.callback_query(lambda c: c.data.startswith('download_'))

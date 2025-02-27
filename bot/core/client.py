@@ -3,7 +3,7 @@ from typing import Optional
 
 from pyrogram import Client
 
-from data.config import API_HASH, API_ID, DATA_DIR
+from data.config import API_HASH, API_ID, DATA_DIR, PHONE
 from .abstract import BaseManager
 
 
@@ -26,7 +26,8 @@ class ClientManager(BaseManager):
         client = Client(
             name=os.path.join(self.session_dir, session_name),
             api_id=API_ID,
-            api_hash=API_HASH
+            api_hash=API_HASH,
+            phone_number=PHONE
         )
 
         await client.start()

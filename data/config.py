@@ -44,6 +44,7 @@ class Config:
 
         self.API_ID: int = self.config.getint('Telegram', 'API_ID')
         self.API_HASH: str = self.config.get('Telegram', 'API_HASH')
+        self.PHONE: str = self.config.get('Telegram', 'PHONE')
 
         self.BATCH_SIZE: int = self.config.getint('Parser', 'BATCH_SIZE')
 
@@ -53,12 +54,20 @@ class Config:
 
 config = Config()
 
+# Bot settings
 BOT_TOKEN = config.BOT_TOKEN
-BATCH_SIZE = config.BATCH_SIZE
+LOCALE = config.LOCALE
 ADMINS = config.ADMINS
+
+# Account credentials
 API_ID = config.API_ID
 API_HASH = config.API_HASH
+PHONE = config.PHONE
+
+# Directories
 BASE_DIR = config.BASE_DIR
 DATA_DIR = config.DATA_DIR
 TEMP_DIR = config.TEMP_DIR
-LOCALE = config.LOCALE
+
+# Parser settings
+BATCH_SIZE = config.BATCH_SIZE

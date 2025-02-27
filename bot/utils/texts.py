@@ -3,8 +3,8 @@ from .formatter import format_number
 
 TEXTS = {
     'RU': {
-        'status_message': lambda chat, total, processed, found, percent, eta: (
-            f"🔍 <b>Парсинг чата: @{chat}</b>\n\n"
+        'status_message': lambda chat, total, processed, found, percent, eta, batch_info='': (
+            f"🔍 <b>Парсинг чата{batch_info}: @{chat}</b>\n\n"
             f"📊 <b>Всего участников:</b> {format_number(total)}\n"
             f"👤 <b>Обработано:</b> {format_number(processed)}/{format_number(total)} ({percent}%)\n"
             f"✨ <b>Найдено пользователей:</b> {format_number(found)}\n\n"
@@ -27,7 +27,7 @@ TEXTS = {
 2️⃣ Вы успешно авторизовались с помощью <b>номера телефона</b>
 3️⃣ Проверьте логи консоли на наличие ошибок
 
-❗️ Если проблемы не устраняются, свяжитесь с @B7XX7B</blockquote>
+❗️ Если проблемы не устраняются, свяжитесь с @bohd4nx</blockquote>
 
 <i>Пожалуйста, подождите, пока устанавливается соединение...</i>
 """,
@@ -52,7 +52,7 @@ TEXTS = {
 
 <b>🚀 Все понятно? Отправьте мне ссылку на группу!</b>
 
-<b>Made with ❤️ by @B7XX7B</b>
+<b>Made with ❤️ by @bohd4nx</b>
 """,
         'buttons': {
             'stop_parsing': "⛔️ Остановить парсинг",
@@ -64,11 +64,14 @@ TEXTS = {
             'parse_error': "❌ Произошла ошибка: {}",
             'results_not_found': "Результаты не найдены",
             'download_error': "Ошибка при загрузке результатов"
-        }
+        },
+        'batch_info': lambda current, total: f" [{current}/{total}]",
+        'error_next': "❌ Ошибка парсинга, переход к следующей ссылке...",
+        'final_batch_message': "✅ Обработка всех ссылок завершена!"
     },
     'EN': {
-        'status_message': lambda chat, total, processed, found, percent, eta: (
-            f"🔍 <b>Parsing chat: @{chat}</b>\n\n"
+        'status_message': lambda chat, total, processed, found, percent, eta, batch_info='': (
+            f"🔍 <b>Parsing chat{batch_info}: @{chat}</b>\n\n"
             f"📊 <b>Total members:</b> {format_number(total)}\n"
             f"👤 <b>Processed:</b> {format_number(processed)}/{format_number(total)} ({percent}%)\n"
             f"✨ <b>Users found:</b> {format_number(found)}\n\n"
@@ -91,7 +94,7 @@ TEXTS = {
 2️⃣ You have successfully authenticated with your <b>phone number</b>
 3️⃣ Check console logs for any errors
 
-❗️ If issues persist, contact @B7XX7B</blockquote>
+❗️ If issues persist, contact @bohd4nx</blockquote>
 
 <i>Please wait while establishing connection...</i>
 """,
@@ -116,7 +119,7 @@ TEXTS = {
 
 <b>🚀 Ready? Send me a group link!</b>
 
-<b>Made with ❤️ by @B7XX7B</b>
+<b>Made with ❤️ by @bohd4nx</b>
 """,
         'buttons': {
             'stop_parsing': "⛔️ Stop Parsing",
@@ -128,13 +131,17 @@ TEXTS = {
             'parse_error': "❌ An error occurred: {}",
             'results_not_found': "Results not found",
             'download_error': "Error downloading results"
-        }
+        },
+        'batch_info': lambda current, total: f" [{current}/{total}]",
+        'error_next': "❌ Parse error, moving to next link...",
+        'final_batch_message': "✅ All links processing completed!"
     }
 }
 
 
-def get_status_message(chat: str, total: int, processed: int, found: int, percent: float, eta: str) -> str:
-    return TEXTS[LOCALE]['status_message'](chat, total, processed, found, percent, eta)
+def get_status_message(chat: str, total: int, processed: int, found: int, percent: float, eta: str,
+                       batch_info: str = '') -> str:
+    return TEXTS[LOCALE]['status_message'](chat, total, processed, found, percent, eta, batch_info)
 
 
 def get_final_message(chat: str, total: int, processed: int, found: int, percent: float, elapsed: str,
@@ -148,6 +155,18 @@ def get_button_text(key: str) -> str:
 
 def get_error_text(key: str, *args) -> str:
     return TEXTS[LOCALE]['errors'][key].format(*args)
+
+
+def get_batch_info(current: int, total: int) -> str:
+    return TEXTS[LOCALE]['batch_info'](current, total)
+
+
+def get_error_next() -> str:
+    return TEXTS[LOCALE]['error_next']
+
+
+def get_final_batch_message() -> str:
+    return TEXTS[LOCALE]['final_batch_message']
 
 
 INIT_TEXT = TEXTS[LOCALE]['init_text']
