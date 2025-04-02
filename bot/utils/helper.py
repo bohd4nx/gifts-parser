@@ -1,3 +1,6 @@
+from aiogram.types import BotCommand
+
+
 def format_time_duration(seconds: float) -> str:
     if seconds < 60:
         return f"{int(seconds)}с"
@@ -16,3 +19,12 @@ def format_number(num: int) -> str:
         return f"{num / 1000:.1f}K".replace(".0K", "K")
     else:
         return f"{num / 1000000:.1f}M".replace(".0M", "M")
+
+
+class BotCommands:
+    @staticmethod
+    async def setup_commands(bot):
+        commands = [
+            BotCommand(command="start", description="🚀 Start"),
+        ]
+        await bot.set_my_commands(commands)

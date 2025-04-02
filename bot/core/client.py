@@ -4,10 +4,9 @@ from typing import Optional
 from pyrogram import Client
 
 from data.config import API_HASH, API_ID, DATA_DIR, PHONE
-from .abstract import BaseManager
 
 
-class ClientManager(BaseManager):
+class ClientManager:
     def __init__(self):
         self.clients = []
         self.session_dir = DATA_DIR

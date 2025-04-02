@@ -3,10 +3,9 @@ from collections import defaultdict
 from typing import Dict, Any
 
 from data.config import TEMP_DIR
-from ..core.abstract import BaseDataHandler
 
 
-class FileService(BaseDataHandler):
+class FileService:
     def __init__(self):
         self.base_path = TEMP_DIR
 

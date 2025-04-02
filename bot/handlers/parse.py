@@ -3,6 +3,7 @@ import logging
 import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import Optional
 
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
@@ -11,16 +12,17 @@ from aiogram.types import Message, FSInputFile, InlineKeyboardMarkup, InlineKeyb
 from bot.services.saver import FileService
 from bot.settings import GiftParser
 from bot.states import ParseStates
-from bot.utils.formatter import format_time_duration
-from bot.utils.texts import (
+from bot.utils import (
+    format_time_duration,
     get_batch_info,
     get_error_next,
     get_status_message,
     get_final_message,
     get_final_batch_message,
-    INIT_TEXT,
+    get_parsing_stopped,
     get_button_text,
-    get_error_text
+    get_error_text,
+    INIT_TEXT
 )
 from data.config import ADMINS
 
@@ -77,7 +79,7 @@ class ParseManager:
     def __init__(self):
         self.file_service = FileService()
         self.parser = GiftParser()
-        self.active_session: ParseSession = None
+        self.active_session: Optional[ParseSession] = None
         self._status_task = None
 
     async def _update_status_loop(self, session: ParseSession):
@@ -124,7 +126,7 @@ class ParseManager:
             await self.active_session.status_message.edit_text(final_text, reply_markup=keyboard)
 
     @staticmethod
-    def get_keyboard(is_parsing: bool = True, chat: str = None) -> InlineKeyboardMarkup:
+    def get_keyboard(is_parsing: bool = True, chat: str = None) -> Optional[InlineKeyboardMarkup]:
         if is_parsing:
             return InlineKeyboardMarkup(inline_keyboard=[[
                 InlineKeyboardButton(
@@ -201,7 +203,7 @@ async def stop_parse_callback(callback_query: CallbackQuery, state: FSMContext):
 
     parse_manager.active_session.stop_requested = True
     await parse_manager.stop_session()
-    await callback_query.answer("Парсинг остановлен")
+    await callback_query.answer(get_parsing_stopped())
     await state.set_state(ParseStates.waiting_for_link)
 
 

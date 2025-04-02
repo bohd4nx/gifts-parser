@@ -1,0 +1,77 @@
+status_message: |
+  🔍 <b>Parsing chat{batch_info}: @{chat}</b>
+
+  📊 <b>Total members:</b> {total}
+  👤 <b>Processed:</b> {processed}/{total_raw} ({percent}%)
+  ✨ <b>Users found:</b> {found}
+
+  ⌛️ <b>ETA:</b> {eta}
+
+final_message: |
+  ⏹ <b>Parsing chat: @{chat} {status}</b>
+
+  📊 <b>Total members:</b> {total}
+  👤 <b>Processed:</b> {processed}/{total_raw} ({percent}%)
+  ✨ <b>Users found:</b> {found}
+
+  ⌛️ <b>Time elapsed:</b> {elapsed}
+
+  ❗Parsing limit - 10k/chat (Please respect Telegram's ToS)
+
+init_text: |
+  🔄 <b>Initializing parsing...</b>
+
+  <blockquote expandable><i>If initialization takes longer than expected, please check:</i>
+
+  1️⃣ All dependencies are properly installed
+  2️⃣ You have successfully authenticated with your <b>phone number</b>
+  3️⃣ Check console logs for any errors
+
+  ❗️ If issues persist, contact @bohd4nx</blockquote>
+
+  <i>Please wait while establishing connection...</i>
+
+start_text: |
+  <b>👋 Hello, {name}</b>
+
+  <blockquote expandable><b>ℹ️ Important information:</b>
+  • I can only parse <b>public groups</b>
+  • Groups must have <b>visible member list</b>
+  • Private groups and channels are <b>not supported</b>
+  • Processing large groups may take some time
+
+  <b>📝 How to use:</b>
+  1. Send me a public group link (e.g., @groupname or https://t.me/groupname)
+  2. Wait for the parsing process to complete
+  3. Download the results file
+
+  <b>⚠️ Limitations:</b>
+  • Cannot parse private groups
+  • Cannot parse groups with hidden members
+  • Rate limits may apply</blockquote>
+
+  <b>🚀 Ready? Send me a group link!</b>
+
+  <b>Made with ❤️ by @bohd4nx | @AccessCheckerBot & @WhoseGiftBot</b>
+
+buttons:
+  stop_parsing: ⛔️ Stop Parsing
+  download_results: 📥 Download Results
+
+errors:
+  nothing_to_stop: ❌ Nothing to stop
+  cant_get_members: ❌ Could not get member count. Make sure the group is public and accessible.
+  parse_error:
+    ❌ An error occurred: { error }
+  results_not_found: Results not found
+  download_error: Error downloading results
+
+batch_info: " [{current}/{total}]"
+error_next: ❌ Parse error, moving to next link...
+final_batch_message: ✅ All links processing completed!
+
+status:
+  stopped: stopped by user
+  completed: completed
+
+parsing_stopped: Parsing stopped

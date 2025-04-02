@@ -8,11 +8,10 @@ from pyrogram.errors import FloodWait
 
 from data.config import BATCH_SIZE
 from data.gifts import GIFT_MAPPINGS
-from .core.abstract import BaseParser
 from .core.client import ClientManager
 
 
-class GiftParser(BaseParser):
+class GiftParser:
     def __init__(self):
         self.client_manager = ClientManager()
         self.parsed_users: Set[int] = set()
@@ -55,8 +54,8 @@ class GiftParser(BaseParser):
             self.parsed_users.add(member.user.id)
             try:
                 user_gifts = []
-                async for gift in client.get_user_gifts(member.user.id):
-                    if gift.is_limited and gift.is_upgraded is None:
+                async for gift in client.get_chat_gifts(member.user.id, exclude_unlimited=True, exclude_upgraded=True):
+                    if gift.is_limited:
                         gift_id = str(gift.id)
                         if gift_id in GIFT_MAPPINGS:
                             user_gifts.append({

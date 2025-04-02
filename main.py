@@ -6,8 +6,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from bot import BotCommands
-from bot import router
+from bot import BotCommands, router, get_client
 from data.config import BOT_TOKEN
 
 
@@ -22,12 +21,27 @@ class TelegramBot:
     def _configure_logging() -> None:
         logging.basicConfig(
             level=logging.ERROR,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            format='[%(asctime)s] - %(levelname)s: %(message)s',
+            datefmt='%H:%M:%S'
         )
         dispatcher_logger = logging.getLogger('aiogram.dispatcher')
         dispatcher_logger.setLevel(logging.INFO)
 
+    @staticmethod
+    async def initialize_pyrogram() -> None:
+        try:
+            logging.info("Initializing Pyrogram session...")
+            client = await get_client()
+            if client and client.is_connected:
+                logging.info(f"Pyrogram session initialized successfully: {client.me.first_name}")
+            else:
+                logging.error("Failed to initialize Pyrogram session")
+        except Exception as e:
+            logging.error(f"Error initializing Pyrogram: {e}")
+
     async def initialize(self) -> None:
+        await self.initialize_pyrogram()
+
         self.bot = Bot(
             token=BOT_TOKEN,
             default=DefaultBotProperties(parse_mode='HTML')
