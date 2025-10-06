@@ -28,13 +28,13 @@ def create_file_content(results: List[Dict[str, Any]], chat_username: str) -> st
 
     for user_id, gifts in user_gifts.items():
         username = gifts[0].get('username', '') if gifts else ''
-        
+
         gift_counts = defaultdict(int)
         for gift in gifts:
             gift_counts[gift['gift_name']] += 1
 
         gifts_text = ' | '.join(f"{name} x {count}" for name, count in gift_counts.items())
-        
+
         user_prefix = f"@{username} " if username else ""
         content += f"{user_prefix}[{user_id}]: {gifts_text}\n\n"
 

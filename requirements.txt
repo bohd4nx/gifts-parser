@@ -7,3 +7,4 @@ configparser==7.2.0
 aiogram_i18n==1.4
 fluent_compiler==1.1
 fluent.runtime==0.4.0
+python-dotenv==1.1.1

@@ -8,8 +8,8 @@ def setup_logging():
         datefmt='%H:%M:%S'
     )
     logging.getLogger('pyrogram').setLevel(logging.ERROR)
-    logging.getLogger('bot.services.parsing').setLevel(logging.DEBUG)
-    
+    # logging.getLogger('bot.services.parsing').setLevel(logging.DEBUG)
+
     logging.getLogger('aiogram.dispatcher').setLevel(logging.INFO)
     logging.getLogger('aiogram.event').setLevel(logging.ERROR)
 

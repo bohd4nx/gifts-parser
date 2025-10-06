@@ -1,7 +1,9 @@
-import configparser
 import logging
+import os
 import sys
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
@@ -11,37 +13,32 @@ class Config:
         self._load_config()
 
     def _load_config(self):
-        config_path = Path(__file__).parent.parent.parent / 'config.ini'
-        
-        if not config_path.exists():
-            logger.error(f"Config file not found at {config_path}")
+        env_path = Path(__file__).parent.parent.parent / '.env'
+
+        if not env_path.exists():
+            logger.error(f"Environment file not found at {env_path}")
             sys.exit(1)
 
-        config = configparser.ConfigParser()
-        config.read(config_path, encoding='utf-8')
+        load_dotenv(dotenv_path=env_path)
 
         try:
-            self.BOT_TOKEN = self._get_required_config(config, 'Bot', 'TOKEN')
-            self.LOCALE = config.get('Bot', 'LOCALE', fallback='EN').upper()
+            self.BOT_TOKEN = self._get_required_env('BOT_TOKEN')
             
-            self.API_ID = int(self._get_required_config(config, 'Telegram', 'API_ID'))
-            self.API_HASH = self._get_required_config(config, 'Telegram', 'API_HASH')
-            self.PHONE_NUMBER = config.get('Telegram', 'PHONE_NUMBER', fallback='')
-            
-        except (ValueError, configparser.Error) as e:
+            self.API_ID = int(self._get_required_env('API_ID'))
+            self.API_HASH = self._get_required_env('API_HASH')
+            self.PHONE_NUMBER = os.getenv('PHONE_NUMBER', '')
+
+        except ValueError as e:
             logger.error(f"Config parsing error: {e}")
             sys.exit(1)
 
     @staticmethod
-    def _get_required_config(config, section, key):
-        try:
-            value = config.get(section, key).strip()
-            if not value:
-                raise ValueError(f"Empty value for {section}.{key}")
-            return value
-        except configparser.NoOptionError:
-            logger.error(f"Missing required config: {section}.{key}")
+    def _get_required_env(key):
+        value = os.getenv(key)
+        if not value:
+            logger.error(f"Missing required environment variable: {key}")
             sys.exit(1)
+        return value
 
 
 config = Config()

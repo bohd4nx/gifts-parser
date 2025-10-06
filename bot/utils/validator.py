@@ -15,10 +15,6 @@ def parse_chat_link(text: str) -> str:
     return text
 
 
-def format_number(num: int) -> str:
-    return f"{num:,}".replace(",", ".")
-
-
 async def validate_chat(bot: Bot, chat: str, i18n: I18nContext) -> tuple[bool, str, int]:
     try:
         chat_info = await bot.get_chat(chat)

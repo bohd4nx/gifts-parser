@@ -9,6 +9,9 @@ __pycache__/
 .venv
 venv/
 
+# Environment variables
+.env
+
 # IDE
 .idea/
 .vscode/
@@ -26,6 +29,4 @@ logs/
 Thumbs.db
 
 # Data files
-data/json/history.json
-cache/
 unknown_errors.txt

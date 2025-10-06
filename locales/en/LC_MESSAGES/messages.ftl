@@ -8,26 +8,24 @@ start-text =
     • Processing large chats may take time
     
     <b>📝 How to use:</b>
-    1. Send a group link (@groupname or https://t.me/groupname)
+    1. Send a group link (@group or https://t.me/group)
     2. Wait for parsing to complete
     3. Download the results file
     
-    <b>🚀 Send me a group link!</b>
-
-parsing-started = 
-    🔍 <b>Starting parse:</b> { $chat } | { $total } members
+    <b>💡 Example links:</b>
+    • @pavlogradnow_chat
+    • @RobloxFleep
+    • https://t.me/csgo4at
+    
+    🔗 <a href="https://github.com/bohd4nx/gifts-parser">Repository</a> • 👨‍💻 <a href="https://t.me/bohd4nx">Developer</a>
 
 parsing-started-large = 
     🔍 <b>Starting advanced parsing:</b> { $chat } | { $total } members
 
     ℹ️ > The chat has more than 10K members - an enhanced parsing algorithm is being used!
 
-parsing-progress = 
-    🔍 <b>Parsing:</b> { $chat }
-    
-    • <b>Processed:</b> { $parsed }/{ $total }
-    • <b>Found with gifts:</b> { $found }
-    • <b>ETA:</b> { $elapsed }
+parsing-started = 
+    🔍 <b>Starting parse:</b> { $chat } | { $total } members
 
 parsing-complete = 
     ✅ <b>Parsing { $chat } completed!</b>
@@ -36,10 +34,26 @@ parsing-complete =
     • <b>Found with gifts:</b> { $total_found }
     • <b>Time elapsed:</b> { $elapsed }
 
-no-results = ❌ No users with non-upgraded gifts found in { $chat }.
+parsing-progress = 
+    🔍 <b>Parsing:</b> { $chat }
+    
+    • <b>Processed:</b> { $parsed }/{ $total }
+    • <b>Found with gifts:</b> { $found }
+    • <b>ETA:</b> { $elapsed }
 
-hidden-members = ❌ Group { $chat } has hidden member list!
 cant-get-members = ❌ Could not access { $chat }. Make sure the group is public and link is correct.
 
-time-format = { $minutes }m { $seconds }s
+hidden-members = ❌ Group { $chat } has hidden member list!
+
+no-results = ❌ No users with non-upgraded gifts found in { $chat }.
+
+btn-russian-selected = • 🇷🇺 Русский •
+btn-english-selected = • 🇺🇸 English •
+btn-russian = 🇷🇺 Русский
+btn-english = 🇺🇸 English
+
 time-format-hours = { $hours }h { $minutes }m
+time-format = { $minutes }m { $seconds }s
+
+alert-lang-changed-ru = 🇷🇺 Язык изменён на русский!
+alert-lang-changed-en = 🇺🇸 Language changed to English!

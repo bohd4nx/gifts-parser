@@ -1,3 +1,3 @@
-from . import start, user
+from . import links, start, settings
 
-__all__ = ["start", "user"]
+__all__ = ["links", "start", "settings"]

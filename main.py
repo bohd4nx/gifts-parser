@@ -1,5 +1,4 @@
 import asyncio
-from pathlib import Path
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
@@ -10,13 +9,14 @@ from pyrogram import Client, enums
 from pyrogram.errors import AuthKeyUnregistered, AuthKeyDuplicated, SessionRevoked
 
 from bot.core import logger, setup_logging, config
-from bot.handlers import user, start
+from bot.handlers import links, start, settings
 
 
 async def main() -> None:
     setup_logging()
 
-    bot = Bot(token=config.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = Bot(token=config.BOT_TOKEN,
+              default=DefaultBotProperties(parse_mode=ParseMode.HTML, link_preview_is_disabled=True))
 
     client = Client(
         name=f"{config.PHONE_NUMBER}",
@@ -26,7 +26,6 @@ async def main() -> None:
         system_version="Windows 11 x64 (24H2)",
         lang_pack="tdesktop",
         lang_code="en",
-        workdir=str(Path(__file__).parent),
         client_platform=enums.ClientPlatform.DESKTOP,
         sleep_threshold=30,
         max_concurrent_transmissions=10
@@ -36,16 +35,17 @@ async def main() -> None:
         core=FluentRuntimeCore(
             path="locales/{locale}/LC_MESSAGES"
         ),
-        default_locale=config.LOCALE.lower()
+        default_locale="en"
     )
 
     dp = Dispatcher()
 
     async with client as app:
-        user.create_handler(app)
+        links.create_handler(app)
 
         dp.include_router(start.router)
-        dp.include_router(user.router)
+        dp.include_router(settings.router)
+        dp.include_router(links.router)
 
         i18n_middleware.setup(dispatcher=dp)
 
