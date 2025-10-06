@@ -96,7 +96,7 @@ https://t.me/csgo4at
 
 | Group Type             | Supported | Requirements                          |
 | ---------------------- | --------- | ------------------------------------- |
-| **Public Groups**      | ✅        | Visible member list required          |
+| **Public Groups**      | ✅        | Must have accessible participant list |
 | **Public Supergroups** | ✅        | Must have accessible participant list |
 | **Private Groups**     | ❌        | Not supported                         |
 
